@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+
+Sitemap: https://sayler991.github.io/Cafe_Dib_v2/sitemap.xml
