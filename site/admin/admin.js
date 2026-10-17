@@ -156,7 +156,7 @@
   }
 
   /* ---------- contenu ---------- */
-  function loadContent() { return sb.from('site_content').select('data').eq('id', 1).single().then(function (r) { if (r.error) throw r.error; CONTENT = r.data.data; return CONTENT; }); }
+  function loadContent() { if (DIRTY && CONTENT) return Promise.resolve(CONTENT); return sb.from('site_content').select('data').eq('id', 1).single().then(function (r) { if (r.error) throw r.error; CONTENT = r.data.data; return CONTENT; }); }
   function save() {
     var err = null;
     ((CONTENT.menu || {}).categories || []).forEach(function (c) { (c.items || []).forEach(function (it) { it.name = String(it.name || '').trim(); if (!it.name) err = 'Un article de la carte n’a pas de nom.'; }); });
@@ -186,10 +186,6 @@
         h('div', { class: 'grid2' }, field('Note Google', RT, 'value', { hint: 'ex. 4,3' }), field('Nombre d’avis', RT, 'count'))));
       m.appendChild(h('section', { class: 'card' }, h('h3', { text: 'La maison' }),
         field('Titre', AB, 'title', { hint: '*texte* = en doré' }), field('Texte principal', AB, 'text', { type: 'textarea', rows: 3 }), field('Second paragraphe', AB, 'text2', { type: 'textarea' }), field('Citation', AB, 'quote', { type: 'textarea' })));
-      var sp = { v: (d.specialities || []).join('\n') };
-      var ta = field('Une spécialité par ligne (bandeau défilant)', sp, 'v', { type: 'textarea', rows: 5 });
-      $('textarea', ta).addEventListener('input', function () { d.specialities = sp.v.split('\n').map(function (x) { return x.trim(); }).filter(Boolean); });
-      m.appendChild(h('section', { class: 'card' }, h('h3', { text: 'Spécialités' }), ta));
     });
   }
 
@@ -200,7 +196,11 @@
       (M.categories || []).forEach(function (c) {
         c.items = c.items || [];
         var sec = h('section', { class: 'card' }), list = h('div');
-        sec.appendChild(h('h3', { text: c.title })); sec.appendChild(h('div', { class: 'grid2' }, field('Nom de l’onglet', c, 'title'), field('Description', c, 'desc')));
+        var ci = M.categories.indexOf(c);
+        sec.appendChild(h('h3', { text: c.title })); sec.appendChild(h('div', { class: 'grid2' }, field('Nom de la rubrique', c, 'title'), field('Description', c, 'desc')));
+        sec.appendChild(h('div', { class: 'row' },
+          h('button', { class: 'btn btn-line btn-sm', type: 'button', text: '↑ Monter la rubrique', disabled: ci === 0, onclick: function () { M.categories.splice(ci - 1, 0, M.categories.splice(ci, 1)[0]); DIRTY = true; m.innerHTML = ''; viewMenu(m); } }),
+          h('button', { class: 'btn btn-danger btn-sm', type: 'button', text: 'Supprimer la rubrique', onclick: function () { if (!confirm('Supprimer la rubrique « ' + (c.title || '') + ' » et tous ses articles ?')) return; M.categories.splice(ci, 1); DIRTY = true; m.innerHTML = ''; viewMenu(m); } })));
         sec.appendChild(list);
         function draw() {
           list.innerHTML = '';
@@ -215,6 +215,7 @@
         }
         draw(); m.appendChild(sec);
       });
+      m.appendChild(h('button', { class: 'btn btn-line', type: 'button', text: '+ Ajouter une rubrique', onclick: function () { M.categories = M.categories || []; M.categories.push({ id: 'r' + Date.now(), title: 'Nouvelle rubrique', desc: '', items: [] }); DIRTY = true; m.innerHTML = ''; viewMenu(m); } }));
     });
   }
 

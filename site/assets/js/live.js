@@ -3,7 +3,12 @@
 (function () {
   'use strict';
   var C = window.CAFEDIB_CONFIG || {}, sb = null, DATA = null;
-  try { if (window.supabase && C.SUPABASE_URL) sb = window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY, { db: { schema: C.SCHEMA || 'cafedib' }, auth: { persistSession: false } }); } catch (e) { sb = null; }
+  // Accès direct à l'API REST Supabase (sans la bibliothèque supabase-js : ~60 Ko de moins)
+  if (C.SUPABASE_URL && window.fetch) sb = {
+    h: function (x) { var o = { apikey: C.SUPABASE_ANON_KEY, Authorization: 'Bearer ' + C.SUPABASE_ANON_KEY, 'Accept-Profile': C.SCHEMA || 'cafedib', 'Content-Profile': C.SCHEMA || 'cafedib' }; for (var k in x) o[k] = x[k]; return o; },
+    content: function () { return fetch(C.SUPABASE_URL + '/rest/v1/site_content?select=data&id=eq.1', { headers: this.h({ Accept: 'application/vnd.pgrst.object+json' }), cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); },
+    insert: function (t, row) { return fetch(C.SUPABASE_URL + '/rest/v1/' + t, { method: 'POST', headers: this.h({ 'Content-Type': 'application/json', Prefer: 'return=minimal' }), body: JSON.stringify(row) }).then(function (r) { if (r.ok) return {}; return r.json().catch(function () { return {}; }).then(function (j) { return { error: { message: j.message || ('Erreur ' + r.status) } }; }); }); }
+  };
   var $ = function (s, r) { return (r || document).querySelector(s); }, $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var RM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -41,17 +46,7 @@
         if (p.src && /^https:\/\//.test(p.src)) { var pic = img.parentNode; $$('source', pic).forEach(function (s) { s.remove(); }); img.src = p.src; }
       });
     });
-    if (Array.isArray(d.specialities) && d.specialities.length) { $('#marquee').innerHTML = d.specialities.map(function (s) { return '<span>' + esc(s) + '</span>'; }).join(''); marquee(); }
-    var m = d.menu || {};
-    (m.categories || []).forEach(function (c, i) {
-      var tab = $('#mt-' + i), pan = $('#mp-' + i); if (!tab || !pan) return;
-      if (c.title) { tab.textContent = c.title; $('h3', pan).textContent = c.title; }
-      if (c.desc) $('.mtxt > p', pan).textContent = c.desc;
-      $('.mitems', pan).innerHTML = (c.items || []).filter(function (it) { return it && it.name; }).map(function (it, j) {
-        var price = String(it.price || '').trim();
-        return '<li style="--i:' + j + '"><span><span class="n">' + esc(it.name) + '</span>' + (it.desc ? '<span class="d">' + esc(it.desc) + '</span>' : '') + '</span><span class="dots"></span>' + (price ? '<span class="p">' + esc(price) + (/^[0-9 .,]+$/.test(price) ? ' ' + esc(m.currency || 'DA') : '') + '</span>' : '') + '</li>';
-      }).join('');
-    });
+    renderMenu(d.menu || {});
     if (Array.isArray(d.hours) && d.hours.length === 7) {
       HOURS = {}; d.hours.forEach(function (h) { var i = DAYS.indexOf(h.day); if (i >= 0) HOURS[i] = h.closed ? null : [h.open, h.close]; });
       $('#hours').innerHTML = d.hours.map(function (h) { return '<li data-dow="' + DAYS.indexOf(h.day) + '"><span>' + esc(h.day) + '</span><b>' + (h.closed ? 'Fermé' : esc(hhmm(h.open)) + ' – ' + esc(hhmm(h.close))) + '</b></li>'; }).join('');
@@ -63,6 +58,44 @@
     if (bk.open === false) { t.disabled = true; t.title = 'Réservations en ligne fermées'; setKind('message'); } else t.disabled = false;
     today(); fillTimes(); observe(); tabInk();
   }
+  function price(p, cur) { p = String(p || '').trim(); return p ? esc(p) + (/^[0-9 .,]+$/.test(p) ? ' ' + esc(cur || 'DA') : '') : ''; }
+  function slug(t, i) { return (String(t || '').normalize ? String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '') : String(t)).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || ('r' + i); }
+  function renderMenu(m) {
+    var cats = (m.categories || []).filter(function (c) { return c && (c.title || (c.items || []).length); }), seen = {};
+    if (!cats.length) return;
+    cats.forEach(function (c, i) { var id = slug(c.id || c.title, i); while (seen[id]) id += '-' + i; seen[id] = 1; c._id = id; });
+    $('#mchips').innerHTML = cats.map(function (c) { return '<a href="#mc-' + c._id + '" data-cat="' + c._id + '">' + esc(c.title) + '</a>'; }).join('');
+    $('#mlist').innerHTML = cats.map(function (c) {
+      var lis = (c.items || []).filter(function (it) { return it && it.name; }).map(function (it) {
+        var p = price(it.price, m.currency);
+        return '<li><div class="mrow"><span class="n">' + esc(it.name) + '</span><span class="dots" aria-hidden="true"></span>' + (p ? '<span class="p">' + p + '</span>' : '') + '</div>' + (it.desc ? '<p class="d">' + esc(it.desc) + '</p>' : '') + '</li>';
+      }).join('');
+      return '<section class="mcat" id="mc-' + c._id + '" data-cat="' + c._id + '"><h3>' + esc(c.title) + '</h3>' + (c.desc ? '<p class="mdesc">' + esc(c.desc) + '</p>' : '') + '<ul class="mitems">' + lis + '</ul></section>';
+    }).join('');
+    filterMenu();
+  }
+  function norm(t) { t = String(t || '').toLowerCase(); return t.normalize ? t.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : t; }
+  function filterMenu() {
+    var q = norm($('#msearch').value.trim()), any = false;
+    $$('#mlist .mcat').forEach(function (sec) {
+      var catHit = q && norm($('h3', sec).textContent).indexOf(q) >= 0, n = 0;
+      $$('li', sec).forEach(function (li) { var ok = !q || catHit || norm(li.textContent).indexOf(q) >= 0; li.hidden = !ok; if (ok) n++; });
+      sec.hidden = !n; if (n) any = true;
+      var chip = $('#mchips a[data-cat="' + sec.getAttribute('data-cat') + '"]'); if (chip) chip.hidden = !n;
+    });
+    $('#mempty').hidden = any;
+  }
+  $('#msearch').addEventListener('input', filterMenu);
+  function chipAct() {
+    var act = null, top = $('#mbar').getBoundingClientRect().bottom + 20;
+    var best = -1e9; $$('#mlist .mcat:not([hidden])').forEach(function (s) { var t = Math.round(s.getBoundingClientRect().top); if (t < top + 60 && t > best + 2) { best = t; act = s.getAttribute('data-cat'); } });
+    if (!act) { var f = $('#mlist .mcat:not([hidden])'); act = f && f.getAttribute('data-cat'); }
+    $$('#mchips a').forEach(function (a) {
+      var on = a.getAttribute('data-cat') === act;
+      if (on && !a.classList.contains('act')) { var bar = $('#mchips'); bar.scrollTo({ left: a.offsetLeft - bar.offsetWidth / 2 + a.offsetWidth / 2, behavior: RM ? 'auto' : 'smooth' }); }
+      a.classList.toggle('act', on);
+    });
+  }
   function load() {
     var fb = function () {
       if (location.protocol === 'file:') { document.documentElement.setAttribute('data-live', 'static'); return; }
@@ -70,8 +103,8 @@
     };
     if (!sb) return fb();
     var to = new Promise(function (_, rej) { setTimeout(function () { rej(new Error('timeout')); }, 6000); });
-    Promise.race([sb.from('site_content').select('data').eq('id', 1).single(), to]).then(function (r) {
-      if (r.error || !r.data) throw r.error || new Error('vide'); apply(r.data.data, 'supabase');
+    Promise.race([sb.content(), to]).then(function (r) {
+      if (!r || !r.data) throw new Error('vide'); apply(r.data, 'supabase');
     }).catch(fb);
   }
 
@@ -125,55 +158,24 @@
       if (io && !RM) io.observe(s); else s.classList.add('in');
     });
   }
-  function marquee() {
-    var t = $('#marquee'); if (RM || t.getAttribute('data-dup') === t.innerHTML.length + '') return;
-    var html = t.innerHTML; t.innerHTML = html + html.replace(/<span>/g, '<span aria-hidden="true">'); t.setAttribute('data-dup', t.innerHTML.length + '');
-  }
-  // diaporama du haut de page (Ken Burns)
-  var slides = $$('.slide'), dots = $$('#hero-dots i'), cur = 0;
-  function nextSlide() {
-    slides[cur].classList.remove('on'); dots[cur].classList.remove('on');
-    cur = (cur + 1) % slides.length;
-    var img = $('img', slides[cur]); img.loading = 'eager';
-    slides[cur].classList.add('on'); void dots[cur].offsetWidth; dots[cur].classList.add('on');
-  }
-  if (!RM) setInterval(function () { if (!document.hidden) nextSlide(); }, 6000);
   // défilement : barre, nav, parallaxe, lien actif
-  var nav = $('#nav'), sticky = $('#sticky'), hero = $('.hero'), media = $('#hero-media'), prog = $('#progress'), pars = $$('[data-par]'), ticking = false;
+  var nav = $('#nav'), sticky = $('#sticky'), hero = $('.hero'), ticking = false;
   var secs = ['maison', 'carte', 'ambiance', 'avis', 'reserver', 'horaires'].map(function (id) { return document.getElementById(id); });
   function frame() {
     ticking = false; var y = window.scrollY, vh = window.innerHeight, H = document.documentElement.scrollHeight - vh;
     nav.classList.toggle('solid', y > 40); sticky.classList.toggle('show', y > hero.offsetHeight * 0.6);
-    prog.style.transform = 'scaleX(' + (H > 0 ? y / H : 0) + ')';
-    if (!RM) {
-      if (y < vh * 1.2) media.style.transform = 'translate3d(0,' + (y * 0.32) + 'px,0)';
-      pars.forEach(function (el) { var r = el.getBoundingClientRect(); if (r.bottom < 0 || r.top > vh) return; var c = (r.top + r.height / 2 - vh / 2); el.style.translate = '0 ' + (c * +el.getAttribute('data-par')).toFixed(1) + 'px'; });
-    }
+    chipAct();
     var act = null; secs.forEach(function (s) { if (s && s.getBoundingClientRect().top < vh * 0.4) act = s.id; });
     $$('.links a').forEach(function (a) { a.classList.toggle('act', a.getAttribute('href') === '#' + act); });
   }
   window.addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }, { passive: true });
   window.addEventListener('resize', function () { tabInk(); frame(); });
-  // lueur au survol des cartes
-  $$('.feat').forEach(function (c) { c.addEventListener('pointermove', function (e) { var r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px'); }); });
   // menu mobile
   var burger = $('#burger'), links = $('#links');
   burger.addEventListener('click', function () { var o = !links.classList.contains('open'); links.classList.toggle('open', o); burger.setAttribute('aria-expanded', String(o)); document.body.style.overflow = o ? 'hidden' : ''; });
   $$('#links a').forEach(function (a) { a.addEventListener('click', function () { links.classList.remove('open'); burger.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; }); });
 
-  /* ---------- onglets de la carte ---------- */
-  var mtabs = $$('#mtabs [role=tab]');
-  function ink(btn, el) { if (!btn || !el) return; el.style.width = btn.offsetWidth + 'px'; el.style.transform = 'translateX(' + btn.offsetLeft + 'px)'; }
-  function tabInk() { ink($('#mtabs [aria-selected=true]'), $('#mtabs-ink')); ink($('.ftabs [aria-selected=true]'), $('.ftabs-ink')); }
-  function selTab(i, focus) {
-    mtabs.forEach(function (b, j) { b.setAttribute('aria-selected', String(i === j)); b.tabIndex = i === j ? 0 : -1; var p = $('#mp-' + j); p.hidden = i !== j; p.classList.toggle('on', i === j); });
-    var p = $('#mp-' + i); $$('.mitems li', p).forEach(function (li) { li.style.animation = 'none'; void li.offsetWidth; li.style.animation = ''; });
-    tabInk(); if (focus) mtabs[i].focus();
-  }
-  mtabs.forEach(function (b, i) {
-    b.addEventListener('click', function () { selTab(i); });
-    b.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') selTab((i + 1) % mtabs.length, 1); if (e.key === 'ArrowLeft') selTab((i + mtabs.length - 1) % mtabs.length, 1); });
-  });
+  function tabInk() { var b = $('.ftabs [aria-selected=true]'), el = $('.ftabs-ink'); if (!b || !el) return; el.style.width = b.offsetWidth + 'px'; el.style.transform = 'translateX(' + b.offsetLeft + 'px)'; }
 
   /* ---------- formulaire ---------- */
   var form = $('#p-form'), out = $('#f-out');
@@ -223,7 +225,7 @@
     var row = { kind: k, name: $('#f-name').value.trim(), phone: $('#f-phone').value.trim(), message: $('#f-msg').value.trim() || null, hp: $('#f-hp').value };
     if (k === 'reservation') { row.day = $('#f-day').value; row.at_time = $('#f-time').value; row.guests = +$('#f-guests').value; row.occasion = $('#f-occasion').value || null; }
     else row.email = $('#f-email').value.trim() || null;
-    sb.from('requests').insert(row).then(function (r) {
+    sb.insert('requests', row).then(function (r) {
       if (r.error) throw new Error(r.error.message);
       var tx = k === 'reservation' ? 'Merci ! Votre demande de réservation (' + row.guests + ' pers., ' + new Date(row.day + 'T12:00:00Z').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' }) + ' à ' + row.at_time.replace(':', 'h') + ') est bien reçue. Nous vous rappelons pour confirmer.' : 'Merci ! Votre message est bien reçu. Nous vous recontactons rapidement.';
       form.reset(); $('#f-guests').value = '2'; fillTimes(); setKind(k); show(tx, true); form.setAttribute('data-sent', String((+form.getAttribute('data-sent') || 0) + 1));
@@ -232,7 +234,7 @@
   });
 
   /* ---------- démarrage ---------- */
-  split($('#hero-title')); marquee(); setKind('reservation'); fillTimes(); today(); observe(); frame();
+  split($('#hero-title')); setKind('reservation'); fillTimes(); today(); observe(); frame();
   requestAnimationFrame(function () { requestAnimationFrame(function () { document.documentElement.classList.add('ready'); tabInk(); }); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(tabInk);
   setInterval(today, 60000);

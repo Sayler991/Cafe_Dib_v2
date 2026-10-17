@@ -12,8 +12,8 @@ samedi→jeudi 06:00–00:00, vendredi 12:00–00:00 · 4,3/5 sur 36 avis Google
 accessibilité fauteuil roulant (entrée, parking, places assises, toilettes) · 3 avis Google cités tels quels avec leur auteur.
 
 ## Éléments provisoires / choix de la maquette (à confirmer avec le client)
-- **Carte et prix : aucun publié** (ni en ligne ni sur la fiche). Le site montre les 3 familles (salés / sucrés / boissons) sans plats ni prix ;
-  le patron peut ajouter articles et prix dans « Carte & prix » (affichés seulement s'ils existent). Pas de commande à emporter faute de prix.
+- **Carte complète (17/10/2026)** : 88 articles en 14 rubriques, transcrits des 5 photos de la carte papier (`menu/menu.json`, `menu/menu.md`, points incertains notés).
+  Stockée dans `cafedib.site_content` (clé `menu`) + `content.json` ; modifiable dans l'admin « Carte & prix » (articles et rubriques).
 - Réservation : créneaux de 30 min de l'ouverture à 23h00, 1 à 20 personnes, jusqu'à 60 jours — paramètres de la maquette.
 - Numéro : la description Google cite aussi « 0559.926.781 » ; le site utilise 0559 82 67 81 (numéro de la fiche) — à confirmer.
 - Champ « Occasion » et textes de liaison (titres de sections) : rédaction de la maquette, sans promesse.
@@ -49,3 +49,8 @@ node tools/e2e/e2e.js https://sayler991.github.io/Cafe_Dib_v2/ /workspace/cafe_d
 python3 -m http.server 8894 --bind 127.0.0.1 (racine du dépôt) && node tools/e2e/admin_test.js /workspace/cafe_dib_v2_shots/ 8894
 ```
 Les demandes de test s'appellent « TEST E2E … » et sont supprimées après coup (requests + customers).
+
+## Allègement (17/10/2026)
+Une seule photo en haut de page (srcset), plus de diaporama / bandeau défilant / parallaxe / barre de progression / badge tournant ;
+photos d'illustration Unsplash retirées ; supabase-js remplacé par des appels REST directs (`fetch`) sur le site public (l'admin garde supabase-js).
+Retour arrière : tags `pre-menu` (gh-pages) et `pre-menu-main` (main).

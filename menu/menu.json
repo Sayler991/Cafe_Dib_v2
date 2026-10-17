@@ -1,0 +1,562 @@
+{
+ "source": "5 photos de la carte papier, transcrites le 17/10/2026",
+ "currency": "DA",
+ "categories": [
+  {
+   "id": "petit-dejeuner",
+   "title": "Petit déjeuner",
+   "desc": "",
+   "items": [
+    {
+     "name": "Classique",
+     "desc": "Boisson chaude à votre choix, jus, croissant ou pain choco, pain de mie, fromage, miel, confiture.",
+     "price": "350"
+    },
+    {
+     "name": "L’Oriental",
+     "desc": "Café au choix, jus, (malwi, mbesses), pain de mie, confiture, miel, fromage, beurre, œuf.",
+     "price": "500"
+    },
+    {
+     "name": "Gourmand",
+     "desc": "Boisson chaude à votre choix, jus, pain de mie, miel, confiture, beurre, tajine merguez, omelette.",
+     "price": "750"
+    },
+    {
+     "name": "Algérien",
+     "desc": "Boisson chaude à votre choix, jus, pain de mie, miel, confiture, beurre, fromage, tajine khelie, omelette.",
+     "price": "800"
+    }
+   ]
+  },
+  {
+   "id": "omelette",
+   "title": "Omelette",
+   "desc": "",
+   "items": [
+    {
+     "name": "Simple",
+     "desc": "3 œufs, kemoune, huile d’olive.",
+     "price": "250"
+    },
+    {
+     "name": "Gruyère",
+     "desc": "3 œufs, gruyère, huile d’olive.",
+     "price": "300"
+    },
+    {
+     "name": "Camembert",
+     "desc": "3 œufs, camembert, huile d’olive.",
+     "price": "350"
+    },
+    {
+     "name": "3 fromages",
+     "desc": "3 œufs, gruyère, camembert, gouda, huile d’olive.",
+     "price": "500"
+    },
+    {
+     "name": "Viande hachée",
+     "desc": "3 œufs, gruyère, camembert, gouda, huile d’olive.",
+     "price": "600"
+    },
+    {
+     "name": "Merguez",
+     "desc": "3 œufs, gruyère, camembert, gouda, huile d’olive.",
+     "price": "600",
+     "note": "Nom écrit « Mzrgeuze » sur la carte, corrigé en « Merguez »."
+    }
+   ]
+  },
+  {
+   "id": "burger",
+   "title": "Burger",
+   "desc": "",
+   "items": [
+    {
+     "name": "Spéciale",
+     "desc": "Sauce, salade, tomate, poulet haché, fromage.",
+     "price": "200"
+    },
+    {
+     "name": "Cheese",
+     "desc": "Sauce, salade, tomate, viande hachée, fromage.",
+     "price": "250",
+     "note": "Écrit « Chesse » sur la carte."
+    },
+    {
+     "name": "Américain",
+     "desc": "Sauce, salade, tomate, viande hachée, œuf, fromage.",
+     "price": "300"
+    },
+    {
+     "name": "Double",
+     "desc": "Sauce, salade, tomate, double viande hachée, fromage.",
+     "price": "400"
+    },
+    {
+     "name": "Algérienne",
+     "desc": "Sauce, salade, tomate, oignon caramélisé, viande hachée, fromage.",
+     "price": "300"
+    },
+    {
+     "name": "Panée",
+     "desc": "Sauce, salade, tomate, poulet pané, fromage.",
+     "price": "400"
+    }
+   ]
+  },
+  {
+   "id": "tacos",
+   "title": "Tacos",
+   "desc": "",
+   "items": [
+    {
+     "name": "Poulet",
+     "desc": "Poulet épicé, sauce fromagère, frites, gouda.",
+     "price": "650"
+    },
+    {
+     "name": "Viande hachée",
+     "desc": "Viande hachée, sauce fromagère, frites, gouda.",
+     "price": "750"
+    },
+    {
+     "name": "Crunchy",
+     "desc": "Poulet pané, sauce fromagère, frites, gouda.",
+     "price": "750"
+    },
+    {
+     "name": "Mexicain",
+     "desc": "Poulet épicé, sauce mexicaine, sauce fromagère, gouda.",
+     "price": "650"
+    },
+    {
+     "name": "Mix",
+     "desc": "Poulet épicé, viande hachée, frites, sauce fromagère, gouda.",
+     "price": "700"
+    }
+   ]
+  },
+  {
+   "id": "sandwich",
+   "title": "Sandwich",
+   "desc": "",
+   "items": [
+    {
+     "name": "Spéciale",
+     "desc": "Salade tomate, double poulet haché, œuf, pâté, fromage, frites.",
+     "price": "350"
+    },
+    {
+     "name": "Kababich",
+     "desc": "Salade tomate, sauces, poulet haché, poulet épicé, frites, sauce gruyère.",
+     "price": "400"
+    },
+    {
+     "name": "Frenchy",
+     "desc": "Salade tomate, poulet épicé, sauce fromagère, camembert, frites.",
+     "price": "450"
+    },
+    {
+     "name": "Double steak",
+     "desc": "Salade tomate, double viande hachée, œuf, fromage, sauces, frites.",
+     "price": "",
+     "note": "Prix manuscrit ambigu (lu « 456 », probablement 450) : laissé vide, à confirmer."
+    },
+    {
+     "name": "California",
+     "desc": "Salade tomate, triple viande hachée, œuf, fromage, frites.",
+     "price": "600",
+     "note": "« viande hachée » ajouté à la main sur la carte."
+    },
+    {
+     "name": "Mexicain",
+     "desc": "Salade tomate, poulet épicé, sauce fromagère, poivron, oignon, frites.",
+     "price": "450"
+    },
+    {
+     "name": "Mix",
+     "desc": "Salade tomate, poulet, viande hachée, sauce gruyère, frites.",
+     "price": "500"
+    },
+    {
+     "name": "4 fromages",
+     "desc": "Escalope à la crème, salade tomate, gouda, gruyère, camembert, fumé.",
+     "price": "500"
+    },
+    {
+     "name": "Panée",
+     "desc": "Salade tomate, poulet pané, sauce fromagère, gruyère, sauce tartare.",
+     "price": "450"
+    },
+    {
+     "name": "Crevette",
+     "desc": "Crevette, sauce fromagère, Lesieur, frites.",
+     "price": "650"
+    }
+   ]
+  },
+  {
+   "id": "panini",
+   "title": "Panini",
+   "desc": "",
+   "items": [
+    {
+     "name": "Merguez",
+     "desc": "Merguez, sauce, frites, gouda, salade tomate.",
+     "price": "500"
+    },
+    {
+     "name": "Viande hachée",
+     "desc": "Viande hachée, fromage, sauce, salade tomate.",
+     "price": "450"
+    },
+    {
+     "name": "Poulet",
+     "desc": "Poulet à la crème, fromage, frites, salade tomate.",
+     "price": "450"
+    }
+   ]
+  },
+  {
+   "id": "pizza",
+   "title": "Pizza",
+   "desc": "",
+   "items": [
+    {
+     "name": "Marguerite",
+     "desc": "Sauce tomate, fromage.",
+     "price": "500"
+    },
+    {
+     "name": "Napolitaine",
+     "desc": "Sauce tomate, champignon, fromage.",
+     "price": "550"
+    },
+    {
+     "name": "Végétarienne",
+     "desc": "Sauce tomate, fromage, gruyère, poivrons, oignon, olive, tomate, maïs.",
+     "price": "650"
+    },
+    {
+     "name": "Thon",
+     "desc": "Sauce tomate, fromage, thon, mozzarella, gruyère.",
+     "price": "650"
+    },
+    {
+     "name": "Fermière",
+     "desc": "Sauce tomate, poulet, fromage, olive.",
+     "price": "700"
+    },
+    {
+     "name": "Regina",
+     "desc": "Sauce tomate, viande hachée, champignon, fromage.",
+     "price": "800"
+    },
+    {
+     "name": "5 fromages",
+     "desc": "Sauce blanche, gruyère, cheddar, fumé, mozzarella, gouda.",
+     "price": "800"
+    },
+    {
+     "name": "Crevette",
+     "desc": "Sauce tomate, gruyère, fromage, crevette fraîche.",
+     "price": "850"
+    },
+    {
+     "name": "Mexicaine",
+     "desc": "Sauce tomate, gruyère, poulet épicé, poivron, sauce piquante.",
+     "price": "750"
+    },
+    {
+     "name": "Indienne",
+     "desc": "Sauce blanche, poulet, fromage fumé, gruyère, olive.",
+     "price": "800"
+    },
+    {
+     "name": "Parisienne",
+     "desc": "Sauce blanche, viande hachée, camembert, gruyère, olive.",
+     "price": "850"
+    },
+    {
+     "name": "Fisavia (2 saisons)",
+     "desc": "Sauce blanche, viande hachée, poulet, poulet, gruyère, olive.",
+     "price": "900"
+    },
+    {
+     "name": "Tlemcenienne (4 saisons)",
+     "desc": "Sauce blanche ou sauce tomate, viande hachée, poulet, thon, 5 fromages, merguez, végétarienne, champignon.",
+     "price": "1000"
+    },
+    {
+     "name": "Fruits de mer",
+     "desc": "Sauce tomate, gruyère, mozzarella, cheddar, crevette, calamar, moules.",
+     "price": "1200"
+    },
+    {
+     "name": "Didou",
+     "desc": "Recette du chef.",
+     "price": "1000"
+    }
+   ]
+  },
+  {
+   "id": "baguette",
+   "title": "Baguette",
+   "desc": "",
+   "items": [
+    {
+     "name": "Poulet",
+     "desc": "Poulet à la crème, frites, sauce fromagère, gouda (salade d’accompagnement).",
+     "price": "800"
+    },
+    {
+     "name": "Viande hachée",
+     "desc": "Viande à la crème, frites, champignon, sauce fromagère, gouda (salade d’accompagnement).",
+     "price": "900",
+     "note": "Nom en partie effacé sur la carte (« VIANDE H… ») : « Viande hachée » probable."
+    },
+    {
+     "name": "Mix",
+     "desc": "Poulet mariné, viande, frites, sauce fromagère, gouda (salade d’accompagnement).",
+     "price": "850"
+    },
+    {
+     "name": "3 fromages",
+     "desc": "Poulet mariné, frites, sauce fromagère, gouda, camembert, fumé (salade d’accompagnement).",
+     "price": "1000"
+    }
+   ]
+  },
+  {
+   "id": "box-panee",
+   "title": "Box panée",
+   "desc": "",
+   "items": [
+    {
+     "name": "Hot wings",
+     "desc": "Pièces de wings panées, frites, sauce Didou.",
+     "price": "500"
+    },
+    {
+     "name": "Pilon",
+     "desc": "Pièces de pilon pané, frites, sauce Didou.",
+     "price": "550"
+    },
+    {
+     "name": "Crispy",
+     "desc": "Pièces d’escalope panée, frites, sauce Didou.",
+     "price": "600"
+    },
+    {
+     "name": "Didou",
+     "desc": "Pièces, mélange de poulet pané, frites, sauce Didou.",
+     "price": "650"
+    }
+   ]
+  },
+  {
+   "id": "entree-froide",
+   "title": "Entrée froide",
+   "desc": "",
+   "items": [
+    {
+     "name": "Salade César",
+     "desc": "",
+     "price": "500"
+    },
+    {
+     "name": "Thon",
+     "desc": "",
+     "price": "500"
+    },
+    {
+     "name": "Crevette",
+     "desc": "",
+     "price": "650"
+    }
+   ]
+  },
+  {
+   "id": "cafes",
+   "title": "Cafés & boissons chaudes",
+   "desc": "",
+   "items": [
+    {
+     "name": "Capsule Caps",
+     "desc": "",
+     "price": "120"
+    },
+    {
+     "name": "Lavazza",
+     "desc": "",
+     "price": "200",
+     "note": "Écrit « Lavasa » sur la carte."
+    },
+    {
+     "name": "Capsule L’Or",
+     "desc": "",
+     "price": "200",
+     "note": "Nom en partie masqué par un reflet (« CAP…, L’OR »)."
+    },
+    {
+     "name": "Davidoff",
+     "desc": "",
+     "price": "200",
+     "note": "Écrit « Davidof »."
+    },
+    {
+     "name": "Illy",
+     "desc": "",
+     "price": "300"
+    },
+    {
+     "name": "Lait",
+     "desc": "",
+     "price": "70"
+    },
+    {
+     "name": "Lait au café ou chocolat",
+     "desc": "",
+     "price": "80"
+    },
+    {
+     "name": "Cappuccino",
+     "desc": "",
+     "price": "250"
+    }
+   ]
+  },
+  {
+   "id": "crepes",
+   "title": "Crêpes",
+   "desc": "Deux colonnes de prix sur la carte, sans titre (pot de Nutella à gauche, autre pâte à tartiner à droite) : les deux prix sont indiqués.",
+   "items": [
+    {
+     "name": "Mourjenne",
+     "desc": "Colonne de droite uniquement.",
+     "price": "300",
+     "note": "Prix de la colonne de gauche vide sur la carte."
+    },
+    {
+     "name": "Nutella",
+     "desc": "Colonne de gauche uniquement.",
+     "price": "350",
+     "note": "Prix de la colonne de droite vide sur la carte."
+    },
+    {
+     "name": "Banane",
+     "desc": "Gauche / droite.",
+     "price": "400 DA / 350 DA"
+    },
+    {
+     "name": "Ananas",
+     "desc": "Gauche / droite.",
+     "price": "400 DA / 350 DA"
+    },
+    {
+     "name": "Au choix",
+     "desc": "Gauche / droite.",
+     "price": "500 DA / 450 DA"
+    }
+   ]
+  },
+  {
+   "id": "desserts",
+   "title": "Desserts",
+   "desc": "",
+   "items": [
+    {
+     "name": "Salade de fruits",
+     "desc": "",
+     "price": "350"
+    },
+    {
+     "name": "Crème brûlée",
+     "desc": "",
+     "price": "300"
+    },
+    {
+     "name": "Mousse au chocolat",
+     "desc": "",
+     "price": "350"
+    },
+    {
+     "name": "Caramel",
+     "desc": "",
+     "price": "350"
+    },
+    {
+     "name": "Kunafa fromage",
+     "desc": "",
+     "price": "550"
+    },
+    {
+     "name": "Kunafa chocolat",
+     "desc": "",
+     "price": "550"
+    },
+    {
+     "name": "Kunafa chocolat aux fruits",
+     "desc": "",
+     "price": "700"
+    }
+   ]
+  },
+  {
+   "id": "gateaux",
+   "title": "Gâteaux & viennoiseries",
+   "desc": "",
+   "items": [
+    {
+     "name": "Croissant",
+     "desc": "",
+     "price": "50"
+    },
+    {
+     "name": "Pain au chocolat",
+     "desc": "",
+     "price": "50"
+    },
+    {
+     "name": "Pain aux raisins",
+     "desc": "",
+     "price": "100"
+    },
+    {
+     "name": "Pain suisse",
+     "desc": "",
+     "price": "100"
+    },
+    {
+     "name": "Cheesecake",
+     "desc": "",
+     "price": "400",
+     "note": "Écrit « Chesse cake »."
+    },
+    {
+     "name": "Mille-feuille",
+     "desc": "",
+     "price": "120"
+    },
+    {
+     "name": "Tranche",
+     "desc": "Selon la tranche.",
+     "price": "120 – 150 – 250 – 350 DA"
+    },
+    {
+     "name": "Chamiya",
+     "desc": "",
+     "price": "120"
+    }
+   ]
+  }
+ ],
+ "skipped": [
+  {
+   "section": "Petit déjeuner",
+   "price": "700",
+   "reason": "Nom illisible (reflet sur la carte). Détail visible : boisson chaude à votre choix, jus, eau, pain de mie, miel, confiture, fromage, tajine escalope."
+  }
+ ]
+}
