@@ -64,7 +64,7 @@
     var cats = (m.categories || []).filter(function (c) { return c && (c.title || (c.items || []).length); }), seen = {};
     if (!cats.length) return;
     cats.forEach(function (c, i) { var id = slug(c.id || c.title, i); while (seen[id]) id += '-' + i; seen[id] = 1; c._id = id; });
-    $('#mchips').innerHTML = cats.map(function (c) { return '<a href="#mc-' + c._id + '" data-cat="' + c._id + '">' + esc(c.title) + '</a>'; }).join('');
+    $('#mchips').innerHTML = cats.map(function (c) { return '<button type="button" data-cat="' + c._id + '">' + esc(c.title) + '</button>'; }).join('');
     $('#mlist').innerHTML = cats.map(function (c) {
       var lis = (c.items || []).filter(function (it) { return it && it.name; }).map(function (it) {
         var p = price(it.price, m.currency);
@@ -72,30 +72,62 @@
       }).join('');
       return '<section class="mcat" id="mc-' + c._id + '" data-cat="' + c._id + '"><h3>' + esc(c.title) + '</h3>' + (c.desc ? '<p class="mdesc">' + esc(c.desc) + '</p>' : '') + '<ul class="mitems">' + lis + '</ul></section>';
     }).join('');
+    setupTabs();
+  }
+  // Onglets : une rubrique à la fois (role tablist / tab / tabpanel)
+  var CUR = null;
+  function setupTabs() {
+    var bar = $('#mchips'); bar.setAttribute('role', 'tablist'); bar.setAttribute('aria-label', 'Rubriques de la carte');
+    $$('a', bar).forEach(function (a) { var b = document.createElement('button'); b.type = 'button'; b.setAttribute('data-cat', a.getAttribute('data-cat')); b.textContent = a.textContent; a.replaceWith(b); });
+    var ids = [];
+    $$('button', bar).forEach(function (b) {
+      var id = b.getAttribute('data-cat'); ids.push(id);
+      b.id = 'mt-' + id; b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', 'mc-' + id);
+      b.onclick = function () { selCat(id, false, true); };
+      b.onkeydown = function (e) {
+        var k = ids.indexOf(id), n = ids.length, t = null;
+        if (e.key === 'ArrowRight') t = (k + 1) % n; else if (e.key === 'ArrowLeft') t = (k + n - 1) % n; else if (e.key === 'Home') t = 0; else if (e.key === 'End') t = n - 1;
+        if (t !== null) { e.preventDefault(); selCat(ids[t], true, false); }
+      };
+    });
+    $$('#mlist .mcat').forEach(function (sec) { sec.setAttribute('role', 'tabpanel'); sec.setAttribute('aria-labelledby', 'mt-' + sec.getAttribute('data-cat')); sec.tabIndex = 0; });
+    if (ids.indexOf(CUR) < 0) CUR = ids[0];
     filterMenu();
   }
+  function selCat(id, focus, scroll) {
+    var changed = CUR !== id; CUR = id;
+    if ($('#msearch').value) { $('#msearch').value = ''; }
+    filterMenu(changed);
+    var b = $('#mt-' + id); if (focus && b) b.focus();
+    if (scroll) { var mb = $('#mbar').getBoundingClientRect(), lt = $('#mlist').getBoundingClientRect().top; if (lt < mb.bottom) scrollTo({ top: lt + scrollY - (64 + mb.height) - 16, behavior: 'auto' }); }
+  }
   function norm(t) { t = String(t || '').toLowerCase(); return t.normalize ? t.normalize('NFD').replace(/[\u0300-\u036f]/g, '') : t; }
-  function filterMenu() {
-    var q = norm($('#msearch').value.trim()), any = false;
+  function filterMenu(fade) {
+    var q = norm($('#msearch').value.trim()), any = false, list = $('#mlist');
+    list.classList.toggle('searching', !!q);
     $$('#mlist .mcat').forEach(function (sec) {
-      var catHit = q && norm($('h3', sec).textContent).indexOf(q) >= 0, n = 0;
-      $$('li', sec).forEach(function (li) { var ok = !q || catHit || norm(li.textContent).indexOf(q) >= 0; li.hidden = !ok; if (ok) n++; });
-      sec.hidden = !n; if (n) any = true;
-      var chip = $('#mchips a[data-cat="' + sec.getAttribute('data-cat') + '"]'); if (chip) chip.hidden = !n;
+      var id = sec.getAttribute('data-cat'), n = 0;
+      if (q) {
+        var catHit = norm($('h3', sec).textContent).indexOf(q) >= 0;
+        $$('li', sec).forEach(function (li) { var ok = catHit || norm(li.textContent).indexOf(q) >= 0; li.hidden = !ok; if (ok) n++; });
+        sec.hidden = !n;
+      } else {
+        $$('li', sec).forEach(function (li) { li.hidden = false; }); n = 1;
+        sec.hidden = id !== CUR;
+        if (!sec.hidden && fade !== false) { sec.classList.remove('fade'); void sec.offsetWidth; sec.classList.add('fade'); }
+      }
+      if (!sec.hidden) any = true;
+    });
+    $$('#mchips [role=tab]').forEach(function (b) {
+      var on = !q && b.getAttribute('data-cat') === CUR;
+      b.setAttribute('aria-selected', String(on)); b.tabIndex = (on || (q && b === $('#mchips [role=tab]'))) ? 0 : -1;
+      b.classList.toggle('act', on);
+      if (on) { var bar = $('#mchips'); bar.scrollTo({ left: b.offsetLeft - bar.offsetWidth / 2 + b.offsetWidth / 2, behavior: RM ? 'auto' : 'smooth' }); }
     });
     $('#mempty').hidden = any;
   }
-  $('#msearch').addEventListener('input', filterMenu);
-  function chipAct() {
-    var act = null, top = $('#mbar').getBoundingClientRect().bottom + 20;
-    var best = -1e9; $$('#mlist .mcat:not([hidden])').forEach(function (s) { var t = Math.round(s.getBoundingClientRect().top); if (t < top + 60 && t > best + 2) { best = t; act = s.getAttribute('data-cat'); } });
-    if (!act) { var f = $('#mlist .mcat:not([hidden])'); act = f && f.getAttribute('data-cat'); }
-    $$('#mchips a').forEach(function (a) {
-      var on = a.getAttribute('data-cat') === act;
-      if (on && !a.classList.contains('act')) { var bar = $('#mchips'); bar.scrollTo({ left: a.offsetLeft - bar.offsetWidth / 2 + a.offsetWidth / 2, behavior: RM ? 'auto' : 'smooth' }); }
-      a.classList.toggle('act', on);
-    });
-  }
+  $('#msearch').addEventListener('input', function () { filterMenu(false); });
+  function chipAct() {}
   function load() {
     var fb = function () {
       if (location.protocol === 'file:') { document.documentElement.setAttribute('data-live', 'static'); return; }
@@ -234,7 +266,7 @@
   });
 
   /* ---------- démarrage ---------- */
-  split($('#hero-title')); setKind('reservation'); fillTimes(); today(); observe(); frame();
+  setupTabs(); split($('#hero-title')); setKind('reservation'); fillTimes(); today(); observe(); frame();
   requestAnimationFrame(function () { requestAnimationFrame(function () { document.documentElement.classList.add('ready'); tabInk(); }); });
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(tabInk);
   setInterval(today, 60000);
